@@ -86,14 +86,13 @@ function checkForChanges(currentState) {
 function sendEmailToRecipients(changes) {
   const recipientsJson = PropertiesService.getScriptProperties().getProperty(PROPERTY_NAMES.EMAIL_RECIPIENTS)
   const recipients = JSON.parse(recipientsJson)
-
   const subject = `${PARK_NAME} Cabin Availability Alert`
+
   let body = `New availability detected for ${PARK_NAME} cabins:\n\n`
 
   changes.forEach(change => (body += `Cabin ${change.cabinId} is now available on ${change.date}.\n`))
 
-  body += `\nTo make a reservation, visit: ${RESERVATION_URL}\n`
-  body += `\nThis alert is for ${PARK_NAME} cabins only. Availability may change quickly, so act fast if you want to book!`
+  body += `\nTo make a reservation, visit: ${RESERVATION_URL}`
 
   recipients.forEach(recipient => MailApp.sendEmail(recipient, subject, body))
 }

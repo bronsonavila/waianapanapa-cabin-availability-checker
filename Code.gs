@@ -12,7 +12,6 @@ const RESERVATION_URL = 'https://camping.ehawaii.gov/camping/welcome.html'
 
 function checkCabinAvailability() {
   try {
-    // Generate today's date in YYYYMMDD format
     const today = new Date()
     const hawaiiTime = Utilities.formatDate(today, 'HST', "yyyy-MM-dd'T'HH:mm:ss'Z'")
     const dateString = Utilities.formatDate(new Date(hawaiiTime), 'HST', 'yyyyMMdd')
@@ -27,21 +26,19 @@ function checkCabinAvailability() {
     const cabins = []
     const dates = []
 
-    // Extract dates from the table header
+    // Skip the first 6 columns which do not contain date information.
     $('table#sites_table thead th').each(function (i) {
       if (i >= 6) dates.push($(this).text().trim())
     })
 
-    // Iterate through each row in the table
     $('table#sites_table tbody tr').each(function () {
       const cabinId = $(this).find('td').eq(0).text().trim()
 
-      // Skip the last row which contains pagination information
+      // Skip the last row which contains pagination information.
       if (cabinId.startsWith('Records')) return
 
       const cabin = { availability: {}, id: cabinId }
 
-      // Skip the first 6 columns which do not contain date information
       for (let i = 6; i < 6 + DAYS_TO_CHECK; i++) {
         cabin.availability[dates[i - 6]] = $(this).find('td').eq(i).text().trim()
       }
@@ -53,7 +50,7 @@ function checkCabinAvailability() {
 
     if (changes.length > 0) sendEmailToRecipients(changes)
 
-    // Store the current state for future comparisons
+    // Store the current state for future comparisons.
     PropertiesService.getScriptProperties().setProperty(PROPERTY_NAMES.LAST_STATE, JSON.stringify(cabins))
   } catch (error) {
     console.error('Error in checkCabinAvailability:', error)
@@ -65,7 +62,7 @@ function checkCabinAvailability() {
 function checkForChanges(currentState) {
   const lastStateString = PropertiesService.getScriptProperties().getProperty(PROPERTY_NAMES.LAST_STATE)
 
-  if (!lastStateString) return [] // First run, no changes to report
+  if (!lastStateString) return [] // First run – no changes to report.
 
   const lastState = JSON.parse(lastStateString)
   const changes = []
@@ -104,22 +101,21 @@ function sendErrorNotification(error) {
 }
 
 function setupAdminEmail() {
-  const adminEmail = 'admin@example.com' // TODO: Add your email here
+  const adminEmail = 'admin@example.com' // TODO: Add your email here.
 
   PropertiesService.getScriptProperties().setProperty(PROPERTY_NAMES.ADMIN_EMAIL, adminEmail)
 }
 
 function setupRecipients() {
-  const recipients = ['email1@example.com', 'email2@example.com'] // TODO: Add your email recipients here
+  const recipients = ['email1@example.com', 'email2@example.com'] // TODO: Add your email recipients here.
 
   PropertiesService.getScriptProperties().setProperty(PROPERTY_NAMES.EMAIL_RECIPIENTS, JSON.stringify(recipients))
 }
 
 function setupTrigger() {
-  // Delete existing triggers
   const triggers = ScriptApp.getProjectTriggers()
+
   triggers.forEach(trigger => ScriptApp.deleteTrigger(trigger))
 
-  // Create a new trigger to run every hour
   ScriptApp.newTrigger('checkCabinAvailability').timeBased().everyHours(1).create()
 }

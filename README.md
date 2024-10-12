@@ -16,17 +16,17 @@ This Google Apps Script project automatically checks for cabin availability at W
 
 4. Set up the admin email:
 
-   - Modify the `setupAdminEmail()` function by replacing `'admin@example.com'` with your actual admin email address.
-   - Run the `setupAdminEmail()` function to save the admin email.
+   - Modify the `setAdminEmail()` function by replacing `'admin@example.com'` with your actual admin email address.
+   - Run the `setAdminEmail()` function to save the admin email.
 
 5. Set up email recipients:
 
-   - Modify the `setupRecipients()` function by replacing the example email addresses with your actual recipient email addresses.
-   - Run the `setupRecipients()` function to save the recipient list.
+   - Modify the `setRecipients()` function by replacing the example email addresses with your actual recipient email addresses.
+   - Run the `setRecipients()` function to save the recipient list.
 
 6. Set up the trigger:
 
-   - Run the `setupTrigger()` function to create an hourly trigger for the script.
+   - Run the `setTrigger()` function to create an hourly trigger for the script.
 
 7. Run the `checkCabinAvailability()` function once manually to initialize the `lastState`. This sets the initial state to check for subsequent changes when the automatic trigger runs.
 

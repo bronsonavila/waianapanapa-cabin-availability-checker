@@ -100,19 +100,19 @@ function sendErrorNotification(error) {
   MailApp.sendEmail(adminEmail, 'Cabin Checker Error', `An error occurred: ${error.message}`)
 }
 
-function setupAdminEmail() {
+function setAdminEmail() {
   const adminEmail = 'admin@example.com' // TODO: Add your email here.
 
   PropertiesService.getScriptProperties().setProperty(PROPERTY_NAMES.ADMIN_EMAIL, adminEmail)
 }
 
-function setupRecipients() {
+function setRecipients() {
   const recipients = ['email1@example.com', 'email2@example.com'] // TODO: Add your email recipients here.
 
   PropertiesService.getScriptProperties().setProperty(PROPERTY_NAMES.EMAIL_RECIPIENTS, JSON.stringify(recipients))
 }
 
-function setupTrigger() {
+function setTrigger() {
   const triggers = ScriptApp.getProjectTriggers()
 
   triggers.forEach(trigger => ScriptApp.deleteTrigger(trigger))

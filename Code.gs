@@ -1,10 +1,19 @@
 // Constants
 
+const APP_PROPERTIES = {
+  ADMIN_EMAIL: 'adminEmail',
+  EMAIL_RECIPIENTS: 'emailRecipients',
+  PREVIOUS_STATE: 'previousState'
+}
+
 const DAYS_TO_CHECK = 60
 
-const PARK_NAME = 'Waiʻānapanapa State Park'
+const EMAIL_ADDRESSES = {
+  ADMIN: 'admin@example.com', // TODO: Add your email here.
+  RECIPIENTS: ['email1@example.com', 'email2@example.com'] // TODO: Add your email recipients here.
+}
 
-const PROPERTY_NAMES = { ADMIN_EMAIL: 'adminEmail', EMAIL_RECIPIENTS: 'emailRecipients', LAST_STATE: 'lastState' }
+const PARK_NAME = 'Waiʻānapanapa State Park'
 
 const RESERVATION_URL = 'https://camping.ehawaii.gov/camping/welcome.html'
 
@@ -51,7 +60,7 @@ function checkCabinAvailability() {
     if (changes.length > 0) sendEmailToRecipients(changes)
 
     // Store the current state for future comparisons.
-    PropertiesService.getScriptProperties().setProperty(PROPERTY_NAMES.LAST_STATE, JSON.stringify(cabins))
+    PropertiesService.getScriptProperties().setProperty(APP_PROPERTIES.PREVIOUS_STATE, JSON.stringify(cabins))
   } catch (error) {
     console.error('Error in checkCabinAvailability:', error)
 
@@ -60,18 +69,18 @@ function checkCabinAvailability() {
 }
 
 function checkForChanges(currentState) {
-  const lastStateString = PropertiesService.getScriptProperties().getProperty(PROPERTY_NAMES.LAST_STATE)
+  const previousStateString = PropertiesService.getScriptProperties().getProperty(APP_PROPERTIES.PREVIOUS_STATE)
 
-  if (!lastStateString) return [] // First run – no changes to report.
+  if (!previousStateString) return [] // First run – no changes to report.
 
-  const lastState = JSON.parse(lastStateString)
+  const previousState = JSON.parse(previousStateString)
   const changes = []
 
   currentState.forEach((cabin, index) => {
-    const lastCabin = lastState[index]
+    const previousCabinState = previousState[index]
 
     Object.keys(cabin.availability).forEach(date => {
-      if (cabin.availability[date] === 'Y' && lastCabin.availability[date] !== 'Y') {
+      if (cabin.availability[date] === 'Y' && previousCabinState.availability[date] !== 'Y') {
         changes.push({ cabinId: cabin.id, date: date })
       }
     })
@@ -81,9 +90,9 @@ function checkForChanges(currentState) {
 }
 
 function sendEmailToRecipients(changes) {
-  const recipientsJson = PropertiesService.getScriptProperties().getProperty(PROPERTY_NAMES.EMAIL_RECIPIENTS)
+  const recipientsJson = PropertiesService.getScriptProperties().getProperty(APP_PROPERTIES.EMAIL_RECIPIENTS)
   const recipients = JSON.parse(recipientsJson)
-  const subject = `${PARK_NAME} Cabin Availability Alert`
+  const subject = `${PARK_NAME} Cabin Availability Alert - ${new Date().toLocaleString('en-US', { timeZone: 'HST' })}`
 
   let body = `New availability detected for ${PARK_NAME} cabins:\n\n`
 
@@ -95,21 +104,21 @@ function sendEmailToRecipients(changes) {
 }
 
 function sendErrorNotification(error) {
-  const adminEmail = PropertiesService.getScriptProperties().getProperty(PROPERTY_NAMES.ADMIN_EMAIL)
+  const adminEmail = PropertiesService.getScriptProperties().getProperty(APP_PROPERTIES.ADMIN_EMAIL)
+  const subject = `Cabin Checker Error - ${new Date().toLocaleString('en-US', { timeZone: 'HST' })}`
 
-  MailApp.sendEmail(adminEmail, 'Cabin Checker Error', `An error occurred: ${error.message}`)
+  MailApp.sendEmail(adminEmail, subject, `An error occurred: ${error.message}`)
 }
 
 function setAdminEmail() {
-  const adminEmail = 'admin@example.com' // TODO: Add your email here.
-
-  PropertiesService.getScriptProperties().setProperty(PROPERTY_NAMES.ADMIN_EMAIL, adminEmail)
+  PropertiesService.getScriptProperties().setProperty(APP_PROPERTIES.ADMIN_EMAIL, EMAIL_ADDRESSES.ADMIN)
 }
 
 function setRecipients() {
-  const recipients = ['email1@example.com', 'email2@example.com'] // TODO: Add your email recipients here.
-
-  PropertiesService.getScriptProperties().setProperty(PROPERTY_NAMES.EMAIL_RECIPIENTS, JSON.stringify(recipients))
+  PropertiesService.getScriptProperties().setProperty(
+    APP_PROPERTIES.EMAIL_RECIPIENTS,
+    JSON.stringify(EMAIL_ADDRESSES.RECIPIENTS)
+  )
 }
 
 function setTrigger() {

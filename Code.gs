@@ -15,7 +15,7 @@ const EMAIL_ADDRESSES = {
 
 const PARK_NAME = 'Waiʻānapanapa State Park'
 
-const RESERVATION_URL = 'https://camping.ehawaii.gov/camping/welcome.html'
+const RESERVATION_URL = 'https://camping.ehawaii.gov/camping/all,details,1684.html'
 
 // Functions
 

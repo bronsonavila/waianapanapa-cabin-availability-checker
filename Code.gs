@@ -77,6 +77,8 @@ function checkForChanges(currentState) {
   const changes = []
 
   currentState.forEach((cabin, index) => {
+    if (cabin.id === '3') return // Skip Cabin 3 (exclusive use cabin).
+
     const previousCabinState = previousState[index]
 
     Object.keys(cabin.availability).forEach(date => {
